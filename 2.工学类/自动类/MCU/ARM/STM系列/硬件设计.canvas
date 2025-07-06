@@ -1,0 +1,11 @@
+{
+	"nodes":[
+		{"id":"f5618fa721a71166","type":"text","text":"最小系统设计","x":140,"y":-260,"width":250,"height":60},
+		{"id":"4dba3773e83f4010","type":"text","text":"**硬件系统设计制造**","x":-180,"y":-120,"width":220,"height":60},
+		{"id":"91915f41053d5542","type":"text","text":"外围系统设计","x":140,"y":20,"width":250,"height":60}
+	],
+	"edges":[
+		{"id":"582d2f58fc02a152","fromNode":"4dba3773e83f4010","fromSide":"right","toNode":"f5618fa721a71166","toSide":"left"},
+		{"id":"dc07ff391566dbfc","fromNode":"4dba3773e83f4010","fromSide":"right","toNode":"91915f41053d5542","toSide":"left"}
+	]
+}

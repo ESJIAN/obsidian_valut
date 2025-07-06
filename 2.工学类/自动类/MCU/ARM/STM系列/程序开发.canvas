@@ -1,0 +1,21 @@
+{
+	"nodes":[
+		{"id":"a67728a70f84983d","x":-140,"y":-20,"width":250,"height":60,"type":"text","text":""},
+		{"id":"c663371170be5dcf","x":-140,"y":179,"width":250,"height":60,"type":"text","text":"利用CubeMX配置项目"},
+		{"id":"c25fc4bfe82038eb","x":359,"y":-185,"width":250,"height":60,"type":"text","text":"创建项目"},
+		{"id":"4f3c9af88ac1540d","x":358,"y":-100,"width":250,"height":60,"type":"text","text":"导入芯片包"},
+		{"id":"83668d1b2b678604","x":358,"y":10,"width":250,"height":60,"type":"text","text":"引脚配置管理"},
+		{"id":"e835b192414dfb04","x":359,"y":359,"width":250,"height":60,"type":"text","text":"项目管理"},
+		{"id":"2557b998317ba065","x":359,"y":480,"width":250,"height":60,"type":"text","text":"其他工具"},
+		{"id":"2031d4c72f59a671","x":358,"y":239,"width":250,"height":60,"type":"text","text":"时钟管理"}
+	],
+	"edges":[
+		{"id":"77970ef208c411ea","fromNode":"a67728a70f84983d","fromSide":"bottom","toNode":"c663371170be5dcf","toSide":"top"},
+		{"id":"d8a3a5dc43e88da9","fromNode":"c663371170be5dcf","fromSide":"right","toNode":"83668d1b2b678604","toSide":"left"},
+		{"id":"c2abc3bcb63f2017","fromNode":"c663371170be5dcf","fromSide":"right","toNode":"2031d4c72f59a671","toSide":"left"},
+		{"id":"44d7d832bda4d124","fromNode":"c663371170be5dcf","fromSide":"right","toNode":"e835b192414dfb04","toSide":"left"},
+		{"id":"00c2005bf652ec03","fromNode":"c663371170be5dcf","fromSide":"right","toNode":"2557b998317ba065","toSide":"left"},
+		{"id":"8879b616512f5ead","fromNode":"c663371170be5dcf","fromSide":"right","toNode":"c25fc4bfe82038eb","toSide":"left"},
+		{"id":"c11b34494423d3ac","fromNode":"c663371170be5dcf","fromSide":"right","toNode":"4f3c9af88ac1540d","toSide":"left"}
+	]
+}

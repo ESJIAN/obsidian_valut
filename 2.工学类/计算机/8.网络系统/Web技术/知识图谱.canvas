@@ -1,0 +1,43 @@
+{
+	"nodes":[
+		{"id":"a00a48c8c73a0365","type":"text","text":"协议通信","x":-340,"y":-15,"width":130,"height":55},
+		{"id":"cd2a2739df48c48a","type":"text","text":"前端技术","x":-580,"y":-17,"width":130,"height":60},
+		{"id":"3579368bfe32ca7d","type":"text","text":"后端技术","x":-100,"y":-12,"width":145,"height":50},
+		{"id":"b264410fd9867ec1","type":"text","text":"反代服务","x":160,"y":-17,"width":250,"height":60},
+		{"id":"155d0cc4a5098916","type":"text","text":"应用层服务","x":160,"y":123,"width":250,"height":60},
+		{"id":"748ac08036e20315","type":"text","text":"数据库技术","x":160,"y":-157,"width":250,"height":60},
+		{"id":"8f87722b6961d9af","type":"text","text":"浏览器技术","x":-880,"y":-217,"width":150,"height":59},
+		{"id":"7ff1d64dbf116482","type":"text","text":"基础语言","x":-880,"y":-95,"width":150,"height":60},
+		{"id":"6b060ae68b141643","type":"text","text":"框架与库","x":-880,"y":43,"width":150,"height":60},
+		{"id":"3164744ec6b24307","type":"text","text":"跨端技术","x":-880,"y":163,"width":150,"height":60},
+		{"id":"9f36de24097af4b7","type":"text","text":"安全技术","x":-340,"y":-360,"width":133,"height":60},
+		{"id":"d8b57b209c80a1c0","x":-210,"y":223,"width":133,"height":60,"type":"text","text":"Socket"},
+		{"id":"71a6d17f4aa0712a","type":"text","text":"HTTP","x":-455,"y":223,"width":115,"height":60},
+		{"id":"598296067e588ddb","type":"text","text":"**总结**：\n- 后端前端类比双射的概念来讲解的化","x":-500,"y":360,"width":450,"height":240}
+	],
+	"edges":[
+		{"id":"b4c431175935c1e1","fromNode":"3579368bfe32ca7d","fromSide":"right","toNode":"748ac08036e20315","toSide":"left"},
+		{"id":"11a8545215149aa7","fromNode":"3579368bfe32ca7d","fromSide":"right","toNode":"b264410fd9867ec1","toSide":"left"},
+		{"id":"b350c95d7d8fe38f","fromNode":"3579368bfe32ca7d","fromSide":"right","toNode":"155d0cc4a5098916","toSide":"left"},
+		{"id":"1176a7f680b2b6f6","fromNode":"3579368bfe32ca7d","fromSide":"left","toNode":"a00a48c8c73a0365","toSide":"right"},
+		{"id":"95cf3003e27a3cb1","fromNode":"a00a48c8c73a0365","fromSide":"right","toNode":"3579368bfe32ca7d","toSide":"left","label":"通信"},
+		{"id":"6b40d744dfb4de89","fromNode":"a00a48c8c73a0365","fromSide":"left","toNode":"cd2a2739df48c48a","toSide":"right","label":"通信"},
+		{"id":"774ed0e660c03e10","fromNode":"cd2a2739df48c48a","fromSide":"right","toNode":"a00a48c8c73a0365","toSide":"left"},
+		{"id":"7b2719018eff6587","fromNode":"a00a48c8c73a0365","fromSide":"bottom","toNode":"71a6d17f4aa0712a","toSide":"top"},
+		{"id":"6d0821fe89f34040","fromNode":"cd2a2739df48c48a","fromSide":"left","toNode":"8f87722b6961d9af","toSide":"right"},
+		{"id":"5e485fa458e4426b","fromNode":"cd2a2739df48c48a","fromSide":"left","toNode":"7ff1d64dbf116482","toSide":"right"},
+		{"id":"95179b9160233dfa","fromNode":"cd2a2739df48c48a","fromSide":"left","toNode":"6b060ae68b141643","toSide":"right"},
+		{"id":"a5e51eef4b99a830","fromNode":"8f87722b6961d9af","fromSide":"left","toNode":"7ff1d64dbf116482","toSide":"left","label":"运行"},
+		{"id":"cb648125dfe36fdd","fromNode":"8f87722b6961d9af","fromSide":"left","toNode":"6b060ae68b141643","toSide":"left","label":"运行"},
+		{"id":"1ad9134c55a0ba06","fromNode":"a00a48c8c73a0365","fromSide":"bottom","toNode":"cd2a2739df48c48a","toSide":"bottom","label":"通信"},
+		{"id":"857897616c7ed8db","fromNode":"3579368bfe32ca7d","fromSide":"top","toNode":"a00a48c8c73a0365","toSide":"top","label":"通信"},
+		{"id":"3aba035e0b70f2f5","fromNode":"cd2a2739df48c48a","fromSide":"left","toNode":"3164744ec6b24307","toSide":"right"},
+		{"id":"9de4744bbe4aea84","fromNode":"8f87722b6961d9af","fromSide":"left","toNode":"3164744ec6b24307","toSide":"left","label":"运行"},
+		{"id":"d06ef4746766f035","fromNode":"7ff1d64dbf116482","fromSide":"bottom","toNode":"6b060ae68b141643","toSide":"top","label":"发展"},
+		{"id":"8edb211f436a7ea7","fromNode":"6b060ae68b141643","fromSide":"bottom","toNode":"3164744ec6b24307","toSide":"top","label":"发展"},
+		{"id":"d2bca09c71fc25b2","fromNode":"a00a48c8c73a0365","fromSide":"top","toNode":"9f36de24097af4b7","toSide":"bottom","label":"被包含"},
+		{"id":"0345024c2c487112","fromNode":"cd2a2739df48c48a","fromSide":"top","toNode":"9f36de24097af4b7","toSide":"left","label":"被包含"},
+		{"id":"2de928caaa3f5b3b","fromNode":"3579368bfe32ca7d","fromSide":"top","toNode":"9f36de24097af4b7","toSide":"right","label":"被包含"},
+		{"id":"ce66fc37b2f742da","fromNode":"a00a48c8c73a0365","fromSide":"bottom","toNode":"d8b57b209c80a1c0","toSide":"top"}
+	]
+}

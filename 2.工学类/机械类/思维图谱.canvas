@@ -1,0 +1,24 @@
+{
+	"nodes":[
+		{"id":"3ac67b0baedb8981","x":20,"y":-320,"width":250,"height":60,"type":"text","text":"机械设计制造及其自动化"},
+		{"id":"b3948eda50a1a679","x":-680,"y":-210,"width":250,"height":60,"type":"text","text":"过程装备控制工程"},
+		{"id":"3ad5c308392c295f","x":-680,"y":-440,"width":250,"height":60,"type":"text","text":"材料成型及控制工程"},
+		{"id":"9836bcbe04766e31","x":20,"y":100,"width":250,"height":60,"type":"text","text":"机械电子工程"},
+		{"id":"d239cfb4ad4b3a57","x":20,"y":280,"width":250,"height":50,"type":"text","text":"微机电系统工程"},
+		{"id":"a4317e51984874f5","x":320,"y":-100,"width":140,"height":60,"type":"text","text":"车辆工程"},
+		{"id":"fc80e40b5527bad0","x":-275,"y":440,"width":840,"height":280,"type":"text","text":""}
+	],
+	"edges":[
+		{"id":"2c6684e8c3b327a9","fromNode":"b3948eda50a1a679","fromSide":"left","toNode":"3ad5c308392c295f","toSide":"left","label":"专业应用"},
+		{"id":"bb8727ef68d551b9","fromNode":"3ad5c308392c295f","fromSide":"right","toNode":"b3948eda50a1a679","toSide":"right","label":"行业应用"},
+		{"id":"b96448a7385c7f37","fromNode":"9836bcbe04766e31","fromSide":"bottom","toNode":"d239cfb4ad4b3a57","toSide":"top","label":"技术扩展"},
+		{"id":"4b9c91cf8fb72d3d","fromNode":"9836bcbe04766e31","fromSide":"left","toNode":"d239cfb4ad4b3a57","toSide":"left","label":"跨学科融合"},
+		{"id":"166161f7330044c4","fromNode":"d239cfb4ad4b3a57","fromSide":"right","toNode":"9836bcbe04766e31","toSide":"right","label":"技术前沿"},
+		{"id":"901b6fe6ac17e5b5","fromNode":"a4317e51984874f5","fromSide":"bottom","toNode":"9836bcbe04766e31","toSide":"top","label":"技术交叉"},
+		{"id":"2d7d1aeddafe6cca","fromNode":"3ac67b0baedb8981","fromSide":"right","toNode":"a4317e51984874f5","toSide":"top","label":"专业细分"},
+		{"id":"1965d217da49b141","fromNode":"3ac67b0baedb8981","fromSide":"bottom","toNode":"9836bcbe04766e31","toSide":"top","label":"技术融合"},
+		{"id":"896831ff6ec90bd1","fromNode":"3ac67b0baedb8981","fromSide":"left","toNode":"d239cfb4ad4b3a57","toSide":"left","label":"技术交叉"},
+		{"id":"69346395c7807ae2","fromNode":"3ac67b0baedb8981","fromSide":"left","toNode":"b3948eda50a1a679","toSide":"right","label":"技术交叉"},
+		{"id":"80f3a356a3e6a13c","fromNode":"3ac67b0baedb8981","fromSide":"left","toNode":"3ad5c308392c295f","toSide":"right","label":"基础性专业"}
+	]
+}

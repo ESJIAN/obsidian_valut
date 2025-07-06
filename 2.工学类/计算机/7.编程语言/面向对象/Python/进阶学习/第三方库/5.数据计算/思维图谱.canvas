@@ -1,0 +1,27 @@
+{
+	"nodes":[
+		{"id":"d33d59b6a3e154e9","type":"text","text":"NumPy","x":-120,"y":10,"width":120,"height":60},
+		{"id":"155f1e3e4f6e24ae","type":"text","text":"SciPy","x":-120,"y":190,"width":120,"height":60},
+		{"id":"3fe2087a16b3c5b3","type":"text","text":"Pytorch","x":-120,"y":-100,"width":120,"height":60},
+		{"id":"02525c9249c0b6d6","type":"text","text":"矩阵运算","x":170,"y":-50,"width":140,"height":60},
+		{"id":"1470081a129f27b0","type":"text","text":"代数运算","x":170,"y":190,"width":140,"height":60},
+		{"id":"b1e342e409695394","type":"text","text":"Pandas","x":-120,"y":320,"width":120,"height":60},
+		{"id":"79d484d5f7a8435f","type":"text","text":"数据分析","x":170,"y":320,"width":140,"height":60},
+		{"id":"e995c8e221781763","type":"text","text":"CPU计算","x":-460,"y":160,"width":160,"height":60},
+		{"id":"935573ebfcb7c5e7","type":"text","text":"GPU计算","x":-460,"y":-100,"width":160,"height":60},
+		{"id":"7fc57cda3ed112d1","type":"text","text":"","x":-460,"y":520,"width":770,"height":220}
+	],
+	"edges":[
+		{"id":"3dfa48ba164e7e49","fromNode":"d33d59b6a3e154e9","fromSide":"bottom","toNode":"155f1e3e4f6e24ae","toSide":"top"},
+		{"id":"6755916df33f3cc2","fromNode":"155f1e3e4f6e24ae","fromSide":"top","toNode":"d33d59b6a3e154e9","toSide":"bottom","label":"联合使用"},
+		{"id":"ec2929ed0934410d","fromNode":"79d484d5f7a8435f","fromSide":"left","toNode":"b1e342e409695394","toSide":"right"},
+		{"id":"ea1306ddc4fcade9","fromNode":"02525c9249c0b6d6","fromSide":"left","toNode":"d33d59b6a3e154e9","toSide":"right"},
+		{"id":"763f9eadcc08820f","fromNode":"02525c9249c0b6d6","fromSide":"left","toNode":"3fe2087a16b3c5b3","toSide":"right"},
+		{"id":"f619a495d912ba90","fromNode":"1470081a129f27b0","fromSide":"left","toNode":"155f1e3e4f6e24ae","toSide":"right"},
+		{"id":"c494f8f8ea94af31","fromNode":"e995c8e221781763","fromSide":"right","toNode":"d33d59b6a3e154e9","toSide":"left"},
+		{"id":"ef9ceb05ce475bed","fromNode":"e995c8e221781763","fromSide":"right","toNode":"155f1e3e4f6e24ae","toSide":"left"},
+		{"id":"3bac03664056be94","fromNode":"e995c8e221781763","fromSide":"right","toNode":"b1e342e409695394","toSide":"left"},
+		{"id":"0628c27f4220f0ff","fromNode":"935573ebfcb7c5e7","fromSide":"right","toNode":"3fe2087a16b3c5b3","toSide":"left"},
+		{"id":"67283f738e6adbf8","fromNode":"e995c8e221781763","fromSide":"right","toNode":"3fe2087a16b3c5b3","toSide":"left"}
+	]
+}

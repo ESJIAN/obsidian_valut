@@ -1,0 +1,26 @@
+{
+	"nodes":[
+		{"id":"41db521270cb507d","type":"text","text":"sensor","x":-125,"y":-20,"width":250,"height":50},
+		{"id":"e8ac22a176cc1fbb","type":"text","text":"@","x":213,"y":-23,"width":250,"height":60},
+		{"id":"5535b58975a6d2e4","type":"text","text":"hytrogen","x":537,"y":160,"width":250,"height":60},
+		{"id":"f6e7a940817afeda","type":"text","text":"temperature","x":540,"y":76,"width":250,"height":60},
+		{"id":"a18dd4bd2b3b6f87","type":"text","text":"temperature","x":540,"y":-90,"width":250,"height":60},
+		{"id":"69110515fb8d9a5c","type":"text","text":"hytrogen","x":537,"y":5,"width":250,"height":60},
+		{"id":"719708c576b76566","type":"text","text":"Q","x":220,"y":106,"width":250,"height":60},
+		{"id":"3636c98c02728dbc","type":"text","text":"temperature ","x":540,"y":-260,"width":250,"height":60},
+		{"id":"f92c5bb875534f93","type":"text","text":"1","x":220,"y":-200,"width":250,"height":60},
+		{"id":"703f322a306c165f","type":"text","text":"订阅","x":790,"y":-90,"width":118,"height":60,"color":"3"},
+		{"id":"e97f99cd806287ac","type":"text","text":"订阅","x":790,"y":76,"width":118,"height":60,"color":"3"},
+		{"id":"f5e3f2cb536fb706","type":"text","text":"订阅","x":787,"y":-260,"width":118,"height":60,"color":"3"}
+	],
+	"edges":[
+		{"id":"555e6d2c9fbc5278","fromNode":"41db521270cb507d","fromSide":"right","toNode":"f92c5bb875534f93","toSide":"left"},
+		{"id":"48c2a1e64f48f6d3","fromNode":"41db521270cb507d","fromSide":"right","toNode":"e8ac22a176cc1fbb","toSide":"left"},
+		{"id":"bc2314a154a37e52","fromNode":"41db521270cb507d","fromSide":"right","toNode":"719708c576b76566","toSide":"left"},
+		{"id":"1271b7a7b402aea9","fromNode":"f92c5bb875534f93","fromSide":"right","toNode":"3636c98c02728dbc","toSide":"left"},
+		{"id":"9c3d622213385381","fromNode":"e8ac22a176cc1fbb","fromSide":"right","toNode":"69110515fb8d9a5c","toSide":"left"},
+		{"id":"7a7c7313b9829940","fromNode":"719708c576b76566","fromSide":"right","toNode":"f6e7a940817afeda","toSide":"left"},
+		{"id":"217abdf9dc25224a","fromNode":"719708c576b76566","fromSide":"right","toNode":"5535b58975a6d2e4","toSide":"left"},
+		{"id":"aa25a0560620eea2","fromNode":"e8ac22a176cc1fbb","fromSide":"right","toNode":"a18dd4bd2b3b6f87","toSide":"left"}
+	]
+}
