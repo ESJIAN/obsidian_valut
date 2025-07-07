@@ -230,3 +230,4 @@ rm -rf .git/indexgit reset
 | 查看状态      | `git status`                             |
 | 解决合并冲突    | `git merge --abort` 或手动修改冲突文件            |
 | 删除远程文件    | `rm -r path && git add -u && git commit` |
+
