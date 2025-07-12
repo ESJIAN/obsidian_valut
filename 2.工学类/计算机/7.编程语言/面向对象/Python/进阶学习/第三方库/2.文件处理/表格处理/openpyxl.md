@@ -1,3 +1,9 @@
+---
+tags:
+  - Python
+  - Lib
+  - template
+---
 
 [官方手册](https://openpyxl-chinese-docs.readthedocs.io/zh-cn/latest/tutorial.html)
 [教程地址](https://geek-docs.com/python/python-tutorial/python-openpyxl.html)
@@ -30,34 +36,8 @@
     
 11. **事件和宏**：虽然 `openpyxl` 不支持宏的执行，但它可以保存包含宏的工作簿。
 
-## 与xlrd对比
-在Python中处理Excel文件时，`xlrd`和`openpyxl`是两个常用的库，它们各自有不同的优缺点和特性。
 
-**xlrd库**：
-
-- 优点：
-    - 适合处理`.xls`格式的Excel文件，对于旧版Excel文件的读取非常有效。
-    - 在处理小到中等大小的Excel文件时性能较好，能够快速读取数据。
-    - 易于上手，文档详细，容易理解和操作。
-- 缺点：
-    - 从版本1.2.0之后不再支持`.xlsx`文件的读取。
-    - 只支持读取操作，需要其他库如`openpyxl`或`xlsxwriter`来实现数据写入Excel文件。
-    - 对于大型Excel文件，性能可能较低，效率不高。
-
-**openpyxl库**：
-
-- 优点：
-    - 支持读写和操作`.xlsx`/`.xlsm`/`.xltx`/`.xltm`文件，适合处理Excel 2007及以后版本的文件。
-    - 提供类似于Excel的接口，易于使用。
-    - 支持多种数据类型，包括数字、日期、时间、字符串等。
-    - 支持样式和格式设置，可以设置单元格的字体、颜色、边框等。
-    - 支持图表和图形的创建和编辑。
-- 缺点：
-    - 在处理大型Excel文件时可能会变得较慢。
-    - 不支持早期版本的Excel文件，如`.xls`格式。
-    - 不支持Macros和VBA代码。
-    - 不支持加密的Excel文件。
-# Excel xlsx
+# 安装&卸载
 
 在本教程中，我们使用 xlsx 文件。 xlsx 是 Microsoft Excel 使用的开放 XML 电子表格文件格式的文件扩展名。 xlsm 文件支持宏。 xlsx 是专有的二进制格式，而 xlsx 是基于 Office Open XML 格式的。
 
@@ -65,13 +45,712 @@
 $ sudo pip3 install openpyxl
 ```
 
-Python
-
-  
 
 我们使用`pip3`工具安装`openpyxl`。
 
 ---
+
+# 方法介绍
+
+`openpyxl` 库中主要涉及以下几个对象：
+
+1.  **Workbook（工作簿）**：
+    *   是 Excel 文件的最顶层容器，代表整个 Excel 文件。
+    *   通过 `openpyxl.Workbook()` 创建新的工作簿。
+    *   通过 `openpyxl.load_workbook('filename.xlsx')` 加载现有的 Excel 文件。
+2.  **Worksheet（工作表）**：
+    *   是工作簿中的一个表格，用于组织和存储数据。
+    *   通过 `book.active` 获取当前活动的工作表。
+    *   通过 `book.get_sheet_by_name("SheetName")` 获取指定名称的工作表。
+    *   通过 `book.create_sheet("SheetName")` 创建新的工作表。
+3.  **Cell（单元格）**：
+    *   是工作表中的一个矩形区域，用于存储单个数据值。
+    *   通过 `sheet['A1']` 或 `sheet.cell(row=1, column=1)` 访问单元格。
+    *   可以读取和写入单元格的值，例如 `cell.value = 10`。
+4.  **Row（行）和 Column（列）**：
+    *   虽然 `openpyxl` 没有显式的 Row 和 Column 对象，但可以通过迭代工作表来按行或按列访问单元格。
+    *   `sheet.rows` 和 `sheet.columns` 属性可以用于按行或按列迭代单元格。
+5.  **Chart（图表）**：
+    *   用于在工作表中创建各种类型的图表，如条形图、折线图等。
+    *   通过 `openpyxl.chart` 模块中的类来创建和配置图表。
+6.  **Image（图像）**：
+    *   用于在工作表中插入图像。
+    *   通过 `openpyxl.drawing.image.Image` 类来创建图像对象，并使用 `sheet.add_image()` 方法将其添加到工作表中。
+7.  **Style（样式）**：
+    *   用于设置单元格的字体、颜色、对齐方式等样式属性。
+    *   通过 `openpyxl.styles` 模块中的类来创建和应用样式。
+8.  **Alignment（对齐）**：
+    *   用于设置单元格内容的对齐方式，如水平居中、垂直居中等。
+    *   通过 `openpyxl.styles.Alignment` 类来创建对齐方式对象，并将其应用于单元格。
+9.  **Font（字体）**：
+    *   用于设置单元格文本的字体、大小、颜色等属性。
+    *   通过 `openpyxl.styles.Font` 类来创建字体对象，并将其应用于单元格。
+
+这些对象共同构成了 `openpyxl` 库的核心，用于处理 Excel 文件的各种操作。
+
+## workbook 对象
+
+`Workbook` 对象是 `openpyxl` 库中最重要的对象之一，它代表一个 Excel 文件。你可以把它看作是 Excel 文件的容器，所有的工作表（Worksheet）、单元格（Cell）、样式（Style）等都包含在其中。
+
+**创建 Workbook 对象**
+
+*   **创建新的工作簿：**
+
+    ```python
+    from openpyxl import Workbook
+
+    workbook = Workbook()  # 创建一个新的工作簿对象
+    ```
+*   **加载现有的工作簿：**
+
+    ```python
+    from openpyxl import load_workbook
+
+    workbook = load_workbook('example.xlsx')  # 加载名为 example.xlsx 的 Excel 文件
+    ```
+
+**Workbook 对象的常用方法**
+
+1.  **`create_sheet(title=None, index=None)`**
+
+    *   **作用：** 创建一个新的工作表（Worksheet）并将其添加到工作簿中。
+    *   **参数：**
+        *   `title` (str, 可选)：新工作表的名称。如果省略，则自动生成一个名称（如 "Sheet1", "Sheet2"）。
+        *   `index` (int, 可选)：新工作表在工作簿中的位置索引（从 0 开始）。如果省略，则添加到工作簿的末尾。
+    *   **返回值：** 新创建的 Worksheet 对象。
+    *   **示例：**
+
+    ```python
+    # 创建一个名为 "Report" 的新工作表，并将其添加到工作簿的末尾
+    worksheet1 = workbook.create_sheet("Report")
+
+    # 创建一个名为 "Summary" 的新工作表，并将其插入到工作簿的第一个位置
+    worksheet2 = workbook.create_sheet("Summary", 0)
+    ```
+
+2.  **`remove(worksheet)`**
+
+    *   **作用：** 从工作簿中移除指定的工作表。
+    *   **参数：**
+        *   `worksheet` (Worksheet)：要移除的 Worksheet 对象。
+    *   **示例：**
+
+    ```python
+    # 获取名为 "Report" 的工作表
+    worksheet = workbook["Report"]
+
+    # 移除该工作表
+    workbook.remove(worksheet)
+    ```
+
+3.  **`copy_worksheet(worksheet)`**
+
+    *   **作用：** 复制工作簿中的指定工作表。
+    *   **参数：**
+        *   `worksheet` (Worksheet)：要复制的 Worksheet 对象。
+    *   **返回值** 新复制的 Worksheet 对象。
+    *   **示例：**
+
+    ```python
+    # 获取名为 "Report" 的工作表
+    worksheet = workbook["Report"]
+
+    # 复制该工作表
+    workbook.copy_worksheet(worksheet)
+    ```
+
+4.  **`sheetnames`**
+
+    *   **作用：** 获取工作簿中所有工作表的名称列表。
+    *   **返回值：** 包含所有工作表名称的列表（list）。
+    *   **示例：**
+
+    ```python
+    # 获取工作簿中所有工作表的名称
+    sheet_names = workbook.sheetnames
+    print(sheet_names)  # 输出：['Sheet', 'Report', 'Summary']
+    ```
+
+5.  **`active`**
+
+    *   **作用：** 获取当前活动的工作表。
+    *   **返回值：** 当前活动的 Worksheet 对象。
+    *   **示例：**
+
+    ```python
+    # 获取当前活动的工作表
+    active_worksheet = workbook.active
+    print(active_worksheet.title)  # 输出：Sheet
+    ```
+
+6.  **`save(filename)`**
+
+    *   **作用：** 将工作簿保存到指定的 Excel 文件。
+    *   **参数：**
+        *   `filename` (str)：要保存的文件名（包括路径）。
+    *   **示例：**
+
+    ```python
+    # 将工作簿保存到名为 "output.xlsx" 的文件
+    workbook.save('output.xlsx')
+    ```
+
+7.  **`close()`**
+
+    *   **作用：** 关闭工作簿，释放资源。
+    *   **说明：** 在处理完 Excel 文件后，建议调用 `close()` 方法来释放资源，尤其是在处理大型文件时。
+    *   **示例：**
+
+    ```python
+    # 关闭工作簿
+    workbook.close()
+    ```
+
+8.  **`index(worksheet)`**
+
+    *   **作用：** 获取指定工作表在工作簿中的索引位置。
+    *   **参数：**
+        *   `worksheet` (Worksheet)：要查询索引的 Worksheet 对象。
+    *   **返回值：** 工作表的索引位置（从 0 开始）。
+    *   **示例：**
+
+    ```python
+    # 获取名为 "Report" 的工作表的索引位置
+    worksheet = workbook["Report"]
+    index = workbook.index(worksheet)
+    print(index)  # 输出：1
+    ```
+
+9. **`get_sheet_by_name(name)`**
+
+    *   **作用：** 通过名称获取工作表
+    *   **参数：**
+        *   `name` (str)：要查询的工作表名称。
+    *   **返回值：** 工作表的索引位置（从 0 开始）。
+    *   **示例：**
+
+    ```python
+    # 获取名为 "Report" 的工作表的索引位置
+    sheet = workbook.get_sheet_by_name("January")
+    ```
+
+## worksheet 对象
+
+`Worksheet` 对象代表 Excel 文件中的一个工作表。它是数据的载体，你可以在工作表中读取、写入、修改单元格数据，设置单元格样式，添加图表和图像等。
+
+**获取 Worksheet 对象**
+
+*   **通过 Workbook 的 `active` 属性获取活动工作表：**
+
+    ```python
+    from openpyxl import Workbook
+
+    workbook = Workbook()
+    worksheet = workbook.active  # 获取当前活动的工作表
+    ```
+
+*   **通过工作表名称获取工作表：**
+
+    ```python
+    from openpyxl import load_workbook
+
+    workbook = load_workbook('example.xlsx')
+    worksheet = workbook['Sheet1']  # 获取名为 "Sheet1" 的工作表
+    ```
+
+*   **通过 `create_sheet()` 方法创建新的工作表：**
+
+    ```python
+    worksheet = workbook.create_sheet('NewSheet')  # 创建名为 "NewSheet" 的工作表
+    ```
+
+**Worksheet 对象的常用方法**
+
+1.  **`title`**
+
+    *   **作用：** 获取或设置工作表的名称。
+    *   **示例：**
+
+    ```python
+    # 获取工作表的名称
+    sheet_name = worksheet.title
+    print(sheet_name)  # 输出：Sheet1
+
+    # 设置工作表的名称
+    worksheet.title = 'DataSheet'
+    ```
+
+2.  **`cell(row, column, value=None)`**
+
+    *   **作用：** 获取指定行和列的单元格对象，也可以设置单元格的值。
+    *   **参数：**
+        *   `row` (int)：单元格的行号（从 1 开始）。
+        *   `column` (int)：单元格的列号（从 1 开始）。
+        *   `value` (any, 可选)：要设置的单元格的值。如果省略，则只获取单元格对象。
+    *   **返回值：** Cell 对象。
+    *   **示例：**
+
+    ```python
+    # 获取第 1 行第 1 列的单元格对象
+    cell = worksheet.cell(row=1, column=1)
+
+    # 设置第 2 行第 3 列的单元格的值为 "Hello"
+    worksheet.cell(row=2, column=3, value='Hello')
+    ```
+
+3.  **`[]` (单元格访问)**
+
+    *   **作用：** 通过单元格坐标（如 "A1", "B2"）访问单元格对象。
+    *   **示例：**
+
+    ```python
+    # 获取 A1 单元格对象
+    cell = worksheet['A1']
+
+    # 设置 B2 单元格的值为 100
+    worksheet['B2'] = 100
+    ```
+
+4.  **`append(iterable)`**
+
+    *   **作用：** 将一行数据（列表或元组）添加到工作表的末尾。
+    *   **参数：**
+        *   `iterable` (list 或 tuple)：包含单元格值的可迭代对象。
+    *   **示例：**
+
+    ```python
+    # 添加一行数据
+    worksheet.append(['Name', 'Age', 'City'])
+    worksheet.append(['Alice', 30, 'New York'])
+    worksheet.append(['Bob', 25, 'London'])
+    ```
+
+5.  **`iter_rows(min_row=None, max_row=None, min_col=None, max_col=None, values_only=False)`**
+
+    *   **作用：** 迭代工作表中的行。
+    *   **参数：**
+        *   `min_row` (int, 可选)：起始行号（从 1 开始）。
+        *   `max_row` (int, 可选)：结束行号。
+        *   `min_col` (int, 可选)：起始列号（从 1 开始）。
+        *   `max_col` (int, 可选)：结束列号。
+        *   `values_only` (bool, 可选)：如果为 True，则只返回单元格的值，否则返回 Cell 对象。
+    *   **返回值：** 一个生成器，每次产生一行 Cell 对象或值的元组。
+    *   **示例：**
+
+    ```python
+    # 迭代工作表中的所有行，并打印每个单元格的值
+    for row in worksheet.iter_rows():
+        for cell in row:
+            print(cell.value)
+
+    # 迭代第 2 行到第 4 行，第 1 列到第 3 列的单元格，只获取单元格的值
+    for row in worksheet.iter_rows(min_row=2, max_row=4, min_col=1, max_col=3, values_only=True):
+        print(row)  # 输出：('Alice', 30, 'New York')
+    ```
+
+6.  **`iter_cols(min_row=None, max_row=None, min_col=None, max_col=None, values_only=False)`**
+
+    *   **作用：** 迭代工作表中的列。
+    *   **参数：**
+        *   与 `iter_rows()` 方法类似。
+    *   **返回值：** 一个生成器，每次产生一列 Cell 对象或值的元组。
+    *   **示例：**
+
+    ```python
+    # 迭代工作表中的所有列，并打印每个单元格的值
+    for col in worksheet.iter_cols():
+        for cell in col:
+            print(cell.value)
+    ```
+
+7.  **`max_row` 和 `max_column`**
+
+    *   **作用：** 获取工作表中包含数据的最大行号和最大列号。
+    *   **示例：**
+
+    ```python
+    # 获取工作表中包含数据的最大行号
+    max_row = worksheet.max_row
+    print(max_row)
+
+    # 获取工作表中包含数据的最大列号
+    max_column = worksheet.max_column
+    print(max_column)
+    ```
+
+8.  **`merge_cells(range_string)`**
+
+    *   **作用：** 合并指定范围内的单元格。
+    *   **参数：**
+        *   `range_string` (str)：要合并的单元格范围，如 "A1:B2"。
+    *   **示例：**
+
+    ```python
+    # 合并 A1 到 B2 单元格
+    worksheet.merge_cells('A1:B2')
+    ```
+
+9.  **`unmerge_cells(range_string)`**
+
+    *   **作用：** 取消合并指定范围内的单元格。
+    *   **参数：**
+        *   `range_string` (str)：要取消合并的单元格范围，如 "A1:B2"。
+    *   **示例：**
+
+    ```python
+    # 取消合并 A1 到 B2 单元格
+    worksheet.unmerge_cells('A1:B2')
+    ```
+
+10. **`insert_rows(idx, amount=1)`**
+
+    *   **作用：** 在指定行号之前插入一行或多行。
+    *   **参数：**
+        *   `idx` (int)：要插入行的行号（从 1 开始）。
+        *   `amount` (int, 可选)：要插入的行数，默认为 1。
+    *   **示例：**
+
+    ```python
+    # 在第 2 行之前插入一行
+    worksheet.insert_rows(2)
+
+    # 在第 5 行之前插入 3 行
+    worksheet.insert_rows(5, 3)
+    ```
+
+11. **`insert_cols(idx, amount=1)`**
+
+    *   **作用：** 在指定列号之前插入一列或多列。
+    *   **参数：**
+        *   `idx` (int)：要插入列的列号（从 1 开始）。
+        *   `amount` (int, 可选)：要插入的列数，默认为 1。
+    *   **示例：**
+
+    ```python
+    # 在第 2 列之前插入一列
+    worksheet.insert_cols(2)
+
+    # 在第 5 列之前插入 2 列
+    worksheet.insert_cols(5, 2)
+    ```
+
+12. **`delete_rows(idx, amount=1)`**
+
+    *   **作用：** 删除指定行号开始的一行或多行。
+    *   **参数：**
+        *   `idx` (int)：要删除行的起始行号（从 1 开始）。
+        *   `amount` (int, 可选)：要删除的行数，默认为 1。
+    *   **示例：**
+
+    ```python
+    # 删除第 3 行
+    worksheet.delete_rows(3)
+
+    # 删除从第 5 行开始的 2 行
+    worksheet.delete_rows(5, 2)
+    ```
+
+13. **`delete_cols(idx, amount=1)`**
+
+    *   **作用：** 删除指定列号开始的一列或多列。
+    *   **参数：**
+        *   `idx` (int)：要删除列的起始列号（从 1 开始）。
+        *   `amount` (int, 可选)：要删除的列数，默认为 1。
+    *   **示例：**
+
+    ```python
+    # 删除第 4 列
+    worksheet.delete_cols(4)
+
+    # 删除从第 2 列开始的 3 列
+    worksheet.delete_cols(2, 3)
+    ```
+
+14. **`freeze_panes`**
+
+    *   **作用：** 冻结窗格，使指定的行和列在滚动时保持可见。
+    *   **示例：**
+
+    ```python
+    # 冻结 A2 单元格上方的行和左侧的列
+    worksheet.freeze_panes = 'B2'
+    ```
+
+15. **`add_chart(chart, anchor)`**
+
+    *   **作用：** 在工作表中添加图表。
+    *   **参数：**
+        *   `chart` (Chart 对象)：要添加的图表对象。
+        *   `anchor` (str)：图表在工作表中的位置，如 "E10"。
+    *   **示例：**
+
+    ```python
+    from openpyxl.chart import BarChart, Reference
+
+    # 创建一个条形图
+    chart = BarChart()
+    data = Reference(worksheet, min_col=2, min_row=1, max_col=2, max_row=7)
+    categories = Reference(worksheet, min_col=1, min_row=1, max_row=7)
+    chart.add_data(data, titles_from_data=True)
+    chart.set_categories(categories)
+
+    # 将图表添加到工作表中
+    worksheet.add_chart(chart, "E10")
+    ```
+
+16. **`add_image(img, anchor)`**
+
+    *   **作用：** 在工作表中添加图像。
+    *   **参数：**
+        *   `img` (Image 对象)：要添加的图像对象。
+        *   `anchor` (str)：图像在工作表中的位置，如 "A1"。
+    *   **示例：**
+
+    ```python
+    from openpyxl.drawing.image import Image
+
+    # 创建一个图像对象
+    img = Image('image.png')
+
+    # 将图像添加到工作表中
+    worksheet.add_image(img, 'A1')
+    ```
+
+## cell 对象
+
+`Cell` 对象代表 Excel 工作表中的一个单元格。它是存储数据的基本单位，你可以读取或修改单元格的值，设置单元格的样式，添加公式等。
+
+**获取 Cell 对象**
+
+*   **通过 Worksheet 的 `cell()` 方法获取：**
+
+    ```python
+    from openpyxl import Workbook
+
+    workbook = Workbook()
+    worksheet = workbook.active
+    cell = worksheet.cell(row=1, column=1)  # 获取第 1 行第 1 列的单元格
+    ```
+
+*   **通过 Worksheet 的 `[]` 访问方式获取：**
+
+    ```python
+    cell = worksheet['A1']  # 获取 A1 单元格
+    ```
+
+**Cell 对象的常用属性和方法**
+
+1.  **`value`**
+
+    *   **作用：** 获取或设置单元格的值。
+    *   **类型：** 可以是字符串、数字、日期、布尔值等。
+    *   **示例：**
+
+    ```python
+    # 获取单元格的值
+    cell_value = cell.value
+    print(cell_value)
+
+    # 设置单元格的值
+    cell.value = 'Hello'
+    cell.value = 123
+    cell.value = True
+    ```
+
+2.  **`row`**
+
+    *   **作用：** 获取单元格所在的行号（从 1 开始）。
+    *   **类型：** int
+    *   **示例：**
+
+    ```python
+    row_number = cell.row
+    print(row_number)  # 输出：1
+    ```
+
+3.  **`column`**
+
+    *   **作用：** 获取单元格所在的列号（从 1 开始）。
+    *   **类型：** int
+    *   **示例：**
+
+    ```python
+    column_number = cell.column
+    print(column_number)  # 输出：1
+    ```
+
+4.  **`column_letter`**
+
+    *   **作用：** 获取单元格所在的列的字母表示（如 "A", "B", "C"）。
+    *   **类型：** str
+    *   **示例：**
+
+    ```python
+    column_letter = cell.column_letter
+    print(column_letter)  # 输出：A
+    ```
+
+5.  **`coordinate`**
+
+    *   **作用：** 获取单元格的坐标（如 "A1", "B2"）。
+    *   **类型：** str
+    *   **示例：**
+
+    ```python
+    coordinate = cell.coordinate
+    print(coordinate)  # 输出：A1
+    ```
+
+6.  **`has_style`**
+
+    *   **作用：** 检查单元格是否应用了样式。
+    *   **类型：** bool
+    *   **示例：**
+
+    ```python
+    has_style = cell.has_style
+    print(has_style)
+    ```
+
+7.  **`font`**
+
+    *   **作用：** 获取或设置单元格的字体样式。
+    *   **类型：** `openpyxl.styles.Font` 对象
+    *   **示例：**
+
+    ```python
+    from openpyxl.styles import Font
+
+    # 获取单元格的字体样式
+    font = cell.font
+
+    # 设置单元格的字体样式
+    cell.font = Font(name='Arial', size=12, bold=True)
+    ```
+
+8.  **`fill`**
+
+    *   **作用：** 获取或设置单元格的填充样式（背景色）。
+    *   **类型：** `openpyxl.styles.PatternFill` 对象
+    *   **示例：**
+
+    ```python
+    from openpyxl.styles import PatternFill
+
+    # 获取单元格的填充样式
+    fill = cell.fill
+
+    # 设置单元格的填充样式
+    cell.fill = PatternFill(fill_type='solid', fgColor='FFFF0000')  # 红色
+    ```
+
+9.  **`border`**
+
+    *   **作用：** 获取或设置单元格的边框样式。
+    *   **类型：** `openpyxl.styles.Border` 对象
+    *   **示例：**
+
+    ```python
+    from openpyxl.styles import Border, Side
+
+    # 获取单元格的边框样式
+    border = cell.border
+
+    # 设置单元格的边框样式
+    side = Side(border_style='thin', color='FF000000')  # 黑色细边框
+    cell.border = Border(top=side, bottom=side, left=side, right=side)
+    ```
+
+10. **`alignment`**
+
+    *   **作用：** 获取或设置单元格的对齐方式。
+    *   **类型：** `openpyxl.styles.Alignment` 对象
+    *   **示例：**
+
+    ```python
+    from openpyxl.styles import Alignment
+
+    # 获取单元格的对齐方式
+    alignment = cell.alignment
+
+    # 设置单元格的对齐方式
+    cell.alignment = Alignment(horizontal='center', vertical='center')  # 水平垂直居中
+    ```
+
+11. **`number_format`**
+
+    *   **作用：** 获取或设置单元格的数字格式。
+    *   **类型：** str
+    *   **示例：**
+
+    ```python
+    # 获取单元格的数字格式
+    number_format = cell.number_format
+
+    # 设置单元格的数字格式
+    cell.number_format = '#,##0.00'  # 千分位分隔，保留两位小数
+    cell.number_format = 'YYYY-MM-DD'  # 日期格式
+    ```
+
+12. **`protection`**
+
+    *   **作用：** 获取或设置单元格的保护设置（锁定、隐藏公式等）。
+    *   **类型：** `openpyxl.styles.Protection` 对象
+    *   **示例：**
+
+    ```python
+    from openpyxl.styles import Protection
+
+    # 获取单元格的保护设置
+    protection = cell.protection
+
+    # 设置单元格的保护设置
+    cell.protection = Protection(locked=True, hidden=False)  # 锁定单元格，不隐藏公式
+    ```
+
+13. **`comment`**
+
+    *   **作用：** 获取或设置单元格的批注。
+    *   **类型：** `openpyxl.comments.Comment` 对象
+    *   **示例：**
+
+    ```python
+    from openpyxl.comments import Comment
+
+    # 获取单元格的批注
+    comment = cell.comment
+
+    # 设置单元格的批注
+    cell.comment = Comment('This is a comment', 'Author')
+    ```
+
+14. **`hyperlink`**
+
+    *   **作用：** 获取或设置单元格的超链接。
+    *   **类型：** str
+    *   **示例：**
+
+    ```python
+    # 获取单元格的超链接
+    hyperlink = cell.hyperlink
+
+    # 设置单元格的超链接
+    cell.hyperlink = 'https://www.example.com'
+    cell.value = 'Example Website'  # 建议同时设置单元格的值为链接文本
+    cell.style = 'Hyperlink'  # 设置单元格样式为超链接样式
+    ```
+
+15. **`internal_value`**
+
+    *   **作用：** 获取单元格的内部值，即 Excel 存储的原始值。
+    *   **类型：** 可以是字符串、数字、日期等。
+    *   **说明：** 与 `value` 属性类似，但 `internal_value` 不会进行类型转换或格式化。
+    *   **示例：**
+
+    ```python
+    internal_value = cell.internal_value
+    print(internal_value)
+    ```
 
 # 基本操作
 ## Openpyxl 创建新文件
@@ -585,7 +1264,8 @@ book.save('output.xlsx')
 ```
 
 这段代码会创建一个名为 `output.xlsx` 的 Excel 文件，其中包含一个名为 "Sheet" 的工作表，并在其中写入一些数据和样式。
-# 统计操作
+
+# 高级操作
 
 对于下一个示例，我们需要创建一个包含数字的 xlsx 文件。 例如，我们使用`RANDBETWEEN()`函数在 10 列中创建了 25 行数字。
 
@@ -1136,20 +1816,12 @@ Python
 cell = sheet.cell(row=1, column=1)
 ```
 
-Python
-
-  
-
 我们得到了最后一个单元格。
 
 ```python
 cell.value = 'Sunny day'
 cell.alignment = Alignment(horizontal='center', vertical='center')
 ```
-
-Python
-
-  
 
 我们将文本设置为合并的单元格并更新其对齐方式。
 
@@ -1175,19 +1847,11 @@ sheet.freeze_panes = 'B2'
 book.save('freezing.xlsx')
 ```
 
-Python
-
-  
-
 该示例通过单元格 B2 冻结窗格。
 
 ```python
 sheet.freeze_panes = 'B2'
 ```
-
-Python
-
-  
 
 要冻结窗格，我们使用`freeze_panes`属性。
 
@@ -1224,10 +1888,6 @@ cell.font = cell.font.  (bold=True)
 book.save('formulas.xlsx')
 ```
 
-Python
-
-  
-
 在示例中，我们使用`SUM()`函数计算所有值的总和，并以粗体显示输出样式。
 
 ```python
@@ -1244,19 +1904,11 @@ for row in rows:
     sheet.append(row)
 ```
 
-Python
-
-  
-
 我们创建两列数据。
 
 ```python
 cell = sheet.cell(row=7, column=2)
 ```
-
-Python
-
-  
 
 我们得到显示计算结果的单元格。
 
@@ -1264,19 +1916,11 @@ Python
 cell.value = "=SUM(A1:B6)"
 ```
 
-Python
-
-  
-
 我们将一个公式写入单元格。
 
 ```python
 cell.font = cell.font.  (bold=True)
 ```
-
-Python
-
-  
 
 我们更改字体样式。
 
@@ -1305,19 +1949,11 @@ sheet.add_image(img, 'B2')
 book.save("sheet_image.xlsx")
 ```
 
-Python
-
-  
-
 在示例中，我们将图像写到一张纸上。
 
 ```python
 from openpyxl.drawing.image import Image
 ```
-
-Python
-
-  
 
 我们使用`openpyxl.drawing.image`模块中的`Image`类。
 
@@ -1325,19 +1961,11 @@ Python
 img = Image("icesid.png")
 ```
 
-Python
-
-  
-
 创建一个新的`Image`类。 `icesid.png`图像位于当前工作目录中。
 
 ```python
 sheet.add_image(img, 'B2')
 ```
-
-Python
-
-  
 
 我们使用`add_image()`方法添加新图像。
 
@@ -1391,10 +2019,6 @@ sheet.add_chart(chart, "A8")
 book.save("bar_chart.xlsx")
 ```
 
-Python
-
-  
-
 在此示例中，我们创建了一个条形图，以显示 2012 年伦敦每个国家/地区的奥运金牌数量。
 
 ```python
@@ -1405,20 +2029,12 @@ from openpyxl.chart import (
 )
 ```
 
-Python
-
-  
-
 `openpyxl.chart`模块具有使用图表的工具。
 
 ```python
 book = Workbook()
 sheet = book.active
 ```
-
-Python
-
-  
 
 创建一个新的工作簿。
 
@@ -1436,29 +2052,17 @@ for row in rows:
     sheet.append(row)
 ```
 
-Python
-
-  
-
 我们创建一些数据并将其添加到活动工作表的单元格中。
 
 ```python
 data = Reference(sheet, min_col=2, min_row=1, max_col=2, max_row=6)
 ```
 
-Python
-
-  
-
 对于`Reference`类，我们引用表中代表数据的行。 在我们的案例中，这些是奥运金牌的数量。
 
 ```python
 categs = Reference(sheet, min_col=1, min_row=1, max_row=6)
 ```
-
-Python
-
-  
 
 我们创建一个类别轴。 类别轴是将数据视为一系列非数字文本标签的轴。 在我们的案例中，我们有代表国家名称的文本标签。
 
@@ -1468,10 +2072,6 @@ chart.add_data(data=data)
 chart.set_categories(categs)
 ```
 
-Python
-
-  
-
 我们创建一个条形图并为其设置数据和类别。
 
 ```python
@@ -1479,29 +2079,17 @@ chart.legend = None
 chart.y_axis.majorGridlines = None
 ```
 
-Python
-
-  
-
 使用`legend`和`majorGridlines`属性，可以关闭图例和主要网格线。
 
 ```python
 chart.varyColors = True
 ```
 
-Python
-
-  
-
 将`varyColors`设置为`True`，每个条形都有不同的颜色。
 
 ```python
 chart.title = "Olympic Gold medals in London"
 ```
-
-Python
-
-  
 
 为图表设置标题。
 
