@@ -258,6 +258,8 @@ $ sudo pip3 install openpyxl
     worksheet = workbook['Sheet1']  # 获取名为 "Sheet1" 的工作表
     ```
 
+>**注意**：若 `Sheet1` 工作表不存在，则会引发 `KeyError` 异常，需要引入异常处理逻辑。
+
 *   **通过 `create_sheet()` 方法创建新的工作表：**
 
     ```python
