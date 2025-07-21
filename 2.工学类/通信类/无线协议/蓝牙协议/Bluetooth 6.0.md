@@ -166,7 +166,7 @@ RTT法涉及启动器向反射器发送一个数据包，反射器再发回同�
 
 交换功能数据后，设备参与 CS 配置程序，并就信道探测程序启动时的配置参数达成一致。
 
-使用PBR时，反射器会以相同的频率回传从发射器接收到的信号。但是，所有设备生成的信号频率都会有一定程度的误差，即预期或_想要的_ 频率与实际测量的生成信号频率不同。频率与波长直接相关，PBR 就是基于这种关系。因此，反射器回波信号频率的不准确性会影响距离测量的准确性。因此，制造商可能会为设备配备一个名为“分数频率偏移执行误差（FAE）表”的数据表，该表针对一组参考频率，提供了生成信号的频率与预期或要求频率之间的差值，以百万分率（ppm）表示。 使用模式-0[[1]](https://www.bluetooth.com/zh-cn/core-specification-6-feature-overview/#_ftn1)FAE 表请求程序，启动器可向反射器请求 FAE 表，并在进行计算时将该数据考虑在内。
+使用PBR时，反射器会以相同的频率回传从发射器接收到的信号。但是，所有设备生成的信号频率都会有一定程度的误差，即预期或_想要的_ 频率与实际测量的生成信号频率不同。频率与波长直接相关，PBR 就是基于这种关系。因此，反射器回波信号频率的不准确性会影响距离测量的准确性。因此，制造商可能会为设备配备一个名为“分数频率偏移执行误差（FAE）表”的数据表，该表针对一组参考频率，提供了生成信号的频率与预期或要求频率之间的差值，以百万分率（ppm）表示。 使用模式-0[[个人仓库/谢承旭/1.理学类/170地科类/书籍总结/1]](https://www.bluetooth.com/zh-cn/core-specification-6-feature-overview/#_ftn1)FAE 表请求程序，启动器可向反射器请求 FAE 表，并在进行计算时将该数据考虑在内。
 
 完成初始化程序后，即可开始信道探测 。这包括两个设备进行一系列不同类型的交换，以获取应用 可用于距离计算的测量数据。
 
@@ -1071,7 +1071,7 @@ LL 扩展功能集功能可为当今和未来最先进、功能的设备提供�
 
 ---
 
-_[[1]](https://www.bluetooth.com/zh-cn/core-specification-6-feature-overview/#_ftnref1)模式-0 将在 3.2.2.5.1 事件、子事件和步骤中解释。  
+_[[个人仓库/谢承旭/1.理学类/170地科类/书籍总结/1]](https://www.bluetooth.com/zh-cn/core-specification-6-feature-overview/#_ftnref1)模式-0 将在 3.2.2.5.1 事件、子事件和步骤中解释。  
 [[2]](https://www.bluetooth.com/zh-cn/core-specification-6-feature-overview/#_ftnref2)高斯移频键  
 [[3]](https://www.bluetooth.com/zh-cn/core-specification-6-feature-overview/#_ftnref3)可连接的广播PDU是允许将连接请求作为响应的PDU  
 [[4]](https://www.bluetooth.com/zh-cn/core-specification-6-feature-overview/#_ftnref4)低复杂度通信编解码器  
