@@ -666,7 +666,7 @@ for row_index in range(1, read_temp_storage_workbook.sheet_by_index(0).nrows):
     *   `add_book` (bool): 是否自动创建一个新的工作簿。默认为 `True`。
 *   **`name`**: 返回当前选中工作簿的名称。
 *   **`fullname`**: 返回工作簿的完整路径。
-*   **`sheets`**: 返回一个 `Sheets` 对象，用于管理工作表集合，==包含该 Excel 工作簿中所有工作表名==。
+*   **`sheets`**: 返回一个 `Sheets` 对象，用于管理工作表集合，==包含该 Excel 工作簿中所有工作表名==（注意：返回的是对象不是表名的字符列表）。
 *   `sheets[name]`: 
 *   **`activate()`**: 激活工作簿。
 *   **`save(path=None)`**: 保存工作簿。如果 `path` 为 `None`，则保存到原始文件路径。
