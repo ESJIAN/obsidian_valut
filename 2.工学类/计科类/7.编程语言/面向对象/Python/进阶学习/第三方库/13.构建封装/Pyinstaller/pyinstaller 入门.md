@@ -1,5 +1,159 @@
 
 
+- # 1. 本库回忆
+
+- ## 1.1. 最简打包步骤
+
+- ### 1. 安装 PyInstaller
+
+通过 pip 安装工具：
+
+
+```bash
+pip install pyinstaller
+```
+
+安装后可通过 `pyinstaller --version` 验证版本13。
+
+- ### 2. 准备项目文件
+
+确保待打包的脚本（如 `main.py`）及其依赖的资源文件（如图标、配置文件）位于同一目录。若涉及动态导入或复杂依赖，需提前处理路径问题48。
+
+- ### 3. 执行打包命令
+
+进入脚本所在目录，运行以下命令：
+
+```bash
+pyinstaller [选项] 脚本名.py
+```
+
+常用选项包括：
+
+- **-F/--onefile**：生成单个可执行文件（体积较大但便于分发，默认此方式）；
+- **-D/--onedir**：生成包含可执行文件和依赖库的目录（启动速度更快）；
+- **-w/--windowed**：隐藏控制台窗口（适用于 GUI 程序）；
+- **-i/--icon**：指定图标文件（Windows 需 `.ico`，macOS 需 `.icns`）；
+- **--hidden-import**：手动指定未被自动检测到的依赖模块。
+
+例如，将 `hello.py` 打包为无控制台的单文件程序：
+
+```bash
+pyinstaller -F -w --icon=app.ico hello.py
+```
+
+- ### 4. 查看输出结果
+
+打包完成后，生成的文件位于 `dist` 目录：
+
+- 单文件模式下直接包含 `hello.exe`（Windows）或无后缀文件（Linux/macOS）；
+- 目录模式下包含可执行文件及依赖库文件夹15。
+
+- ### 5. 处理资源文件
+
+若程序依赖非代码文件（如图像、数据），需通过 `--add-data` 参数嵌入：
+
+```bash
+# Windows 格式
+pyinstaller --add-data "config.ini;." --add-data "assets/;assets/" -F main.py
+# Linux/macOS 格式
+pyinstaller --add-data "config.ini:." --add-data "assets/:assets/" -F main.py
+```
+
+冒号（或分号）前为源路径，后为目标路径45。
+
+- ### 6. 定制打包配置
+
+PyInstaller 会生成同名 `.spec` 文件，可手动编辑以调整打包行为，例如修改资源路径、排除冗余模块等。
+
+- ### 关键注意事项
+
+- **跨平台限制**：需在目标平台上打包（如 Windows 生成 Windows 可执行文件）1011；
+- **体积优化**：单文件模式因包含完整解释器体积较大，可通过 `--exclude-module` 排除不必要依赖；
+- **调试建议**：首次打包建议使用 `-c/--console` 显示控制台，便于排查依赖或路径错误。
+
+通过以上步骤，即可将 Python 脚本转换为无需 Python 环境即可运行的独立程序。对于复杂项目，可结合 `.spec` 文件或虚拟环境进一步优化打包流程911。
+
+- # 2. 本库重点
+
+- ## 2.1. Pytorch 打包兼容性
+
+>**背景**：Pyinstall 在打包含 Pytorch 的项目时候，很容易因为 Pytorch 内部复杂的包依赖产生各种各样的报错，为了避免下次开相关项目仍遇到这个问题，故写下如下内容。
+
+根据社区反馈和实际测试，以下是与 PyInstaller 兼容性较好的 PyTorch 版本对应关系（截至 2024 年 7 月），可根据项目需求选择：
+
+---
+
+- ### 一、推荐稳定组合（优先选择）
+
+| PyTorch 版本         | Torchaudio版本            | Torchvision版本             | Numpy版本 | PyInstaller 版本         | 兼容性说明                                                               |
+| ------------------ | ----------------------- | ------------------------- | ------- | ---------------------- | ------------------------------------------------------------------- |
+| `torch==2.0.1`     | `torchaudio==2.0.1`     | `torchvision==0.15.1`     |         | `pyinstaller==5.8.0`   | 最新长期支持组合，PyTorch 2.0 优化了模块结构，PyInstaller 5.8 对动态导入支持更完善，适合需要新特性的项目。 |
+| `torch==2.0.1+cpu` | `torchaudio==2.0.1+cpu` | `torchvision==0.15.1+cpu` |         |                        |                                                                     |
+|  `torch==1.13.1`   |                         |                           |         |  `pyinstaller==5.4.0`  | 经典稳定组合，社区反馈问题少，适合对稳定性要求高的项目（如不依赖 PyTorch 2.x 新特性）。                  |
+
+>**提示**：cpu 版本的 Pytorch 安装见 [[1.Pytorch基础]] 的安装章节
+
+---
+
+- ### 二、次优组合（特定场景适用）
+
+| PyTorch 版本       | Torchaudio版本 | Torchvision版本 | Numpy版本 | PyInstaller 版本         | 适用场景                                                                                 |
+| ---------------- | ------------ | ------------- | ------- | ---------------------- | ------------------------------------------------------------------------------------ |
+| `torch==1.12.1`  |              |               |         |  `pyinstaller==5.0.0`  | 旧项目兼容，适合仅需基础功能（如张量运算、简单模型推理）的场景。                                                     |
+|  `torch==2.1.0`  |              |               |         |  `pyinstaller==6.0.0`  | 尝鲜新特性（如 `torch.compile`），但需注意 PyInstaller 6.x 对动态模块的钩子可能未完全覆盖，需手动补充 `hiddenimports`。 |
+
+---
+
+- ### 三、注意事项
+
+1. **CUDA 版本匹配**：若使用 GPU 版 PyTorch（如 `torch==2.0.1+cu117`），需确保：
+    - 打包环境与运行环境的 CUDA 版本一致（如运行环境需安装 CUDA 11.7 运行时库）；
+    - PyInstaller 需通过 `binaries` 参数打包 CUDA 相关 DLL（如 `cudart64_110.dll`）。
+2. **CPU 版本优先**：若项目无需 GPU 加速，建议使用 CPU 版 PyTorch（如 `torch==2.0.1+cpu`），兼容性更稳定，打包体积更小。
+3. **测试验证**：无论选择哪个版本，建议在虚拟环境中执行以下步骤验证：
+
+    ```bash
+    # 安装指定版本
+    pip install torch==2.0.1 pyinstaller==5.8.0
+    # 打包测试
+    pyinstaller main_window.spec
+    # 运行 exe 验证功能（如你的 `image_to_excel` 函数是否正常调用 PyTorch）
+    ```
+    
+
+---
+
+- ### 针对你的项目建议
+
+你的项目中使用了 `PPStructure`（来自 PaddleOCR），需注意 PaddlePaddle 与 PyTorch 的 CUDA 版本需一致（如均为 CUDA 11.7）。推荐选择 `torch==2.0.1+cu117` + `pyinstaller==5.8.0`，并在 `main_window.spec` 中补充以下配置避免打包遗漏：
+
+```txt
+a = Analysis(
+    ['main_window.py'],
+    pathex=[],
+    binaries=[],
+    datas=[
+        # 打包 PaddleOCR 模型文件（根据你的 `image_handler.py` 实际路径调整）
+        ('./src/core/ocr_models', 'src/core/ocr_models'),
+    ],
+    hiddenimports=[
+        # PyTorch 动态模块（解决之前的 `_inductor` 报错）
+        'torch.distributed._shard.sharding_spec',
+        'torch.distributed._shard.sharded_tensor',
+        'torch.distributed.checkpoint'
+    ],
+    excludes=[
+        # 排除无需模块（减少冲突）
+        'matplotlib', 
+        'torch.distributed',
+        'torch._inductor'
+    ],
+    noarchive=False,
+    optimize=0,
+)
+```
+
+
 - # 3. 本库犯错
 
 - ## 3.1. 虚拟环境没有安装 pyinstaller 使用主环境的 pyinstaller 进行错误的打包
@@ -8,7 +162,7 @@
 
 
 
-## 1 简介
+# 1 简介
 
 python提供了多种方法用于将普通的*.py程序文件编译成exe文件（有时这里的“编译”也称作“打包”）。exe文件即可执行文件，打包后的*.exe应用不用依赖[python环境](https://so.csdn.net/so/search?q=python%E7%8E%AF%E5%A2%83&spm=1001.2101.3001.7020)，可以在他人的电脑上运行。
 
@@ -18,7 +172,7 @@ pyinstaller的官网是：[https://pyinstaller.org/](https://pyinstaller.org/ "h
 
 ![](https://i-blog.csdnimg.cn/blog_migrate/40b8cce16082a2f06c16675a70f16341.png)  
 
-## 2 安装
+# 2 安装
 
 可以通过pip进行安装。首先启动cmd，输入以下内容后回车：
 
@@ -34,25 +188,75 @@ pyinstaller --version
 
 >如果显示找不到“pyinstaller”，请转到最后一章“常见问题”
 
-## 3 原理和打包效果
+# 3 原理和打包效果
 
-### 3.1 原理概述
+## 3.1 原理概述
 
-在开始打包前，读者有必要先了解pyinstaller的打包原理。
+PyInstaller 的打包过程本质上是一个 “**冻结（Freezing）**” 过程：将 Python 脚本、依赖库、解释器环境等 “冻结” 成一个或一组独立文件，使其能在没有安装 Python 的系统上运行。其核心步骤可拆解为以下 4 个阶段，每个阶段都有明确的技术逻辑：
 
-**如果你只在乎打包结果而不在乎细节，你可以跳过第3章，直接进入下面的打包环节。但是，当你打包时遇到问题时，还是建议你先把打包原理看完，可能你的问题会得到解决。**
+### **3.1.1. 分析阶段（Analysis）：识别所有依赖**
 
-pyinstaller先读取你需要打包的python文件，然后搜索其中使用的模块，然后将所需的模块以及Python解释器放到一起，并通过一些操作构建exe，最终形成你的应用程序。
+PyInstaller 首先需要**递归分析脚本的所有依赖项**，确保没有遗漏任何模块、库或资源文件。具体操作包括：
 
-### 3.2 搜索模块
+- **静态分析**：通过 `modulegraph` 库解析脚本中的 `import` 语句，构建依赖树（包括标准库、第三方库、自定义模块）。
+
+- **动态分析**：处理 “隐藏依赖”（如通过 `__import__()`、`exec()` 动态导入的模块，或通过配置文件动态加载的资源），这也是为什么复杂项目常需要手动通过 `--hidden-import` 或 `.spec` 文件指定依赖的原因。
+
+- **资源收集**：识别脚本中用到的非代码文件（如图像、配置文件），后续会通过 `--add-data` 等参数打包到目标文件中。
+
+### **3.1.2. 冻结阶段（Freezing）：处理代码与依赖**
+
+分析完成后，PyInstaller 将所有依赖 “冻结” 为独立于系统 Python 环境的形式：
+
+- **字节码转换**：将 `.py` 源码编译为 `.pyc` 字节码（避免源码泄露，同时加速加载）。
+
+- **模块打包**：将所有依赖的 Python 模块（包括标准库如 `os`、`sys`，第三方库如 `requests` 等）收集到一个临时目录，按原目录结构整理。
+
+- **二进制处理**：对于 C 扩展模块（如 `.pyd` 或 `.so` 文件），直接复制其二进制文件（因为它们无法被编译为字节码，需保持原生格式）。
+
+### **3.1.3. 引导程序阶段（Bootloader）：准备启动环境**
+
+为了让冻结的代码能在无 Python 的系统上运行，PyInstaller 会嵌入一个**引导程序（Bootloader）**—— 这是一个预编译的平台特定二进制文件（Windows 下为 `.exe`，Linux 下为 ELF 格式，macOS 下为 Mach-O）。其作用是：
+
+- **初始化环境**：在程序运行时，创建临时目录（单文件模式下），将冻结的代码和依赖解压到该目录（多文件模式下直接使用 `dist` 目录）。
+
+- **启动解释器**：加载一个精简的 Python 解释器（从当前环境提取，与冻结的代码绑定），确保不依赖系统安装的 Python。
+
+- **执行用户脚本**：引导解释器定位并运行用户的入口脚本（如 `main.py`）。
+
+### **3.1.4. 构建阶段（Building）：生成最终可执行文件**
+
+最后，PyInstaller 将冻结的代码、依赖和引导程序组合，生成目标文件：
+
+- **单文件模式（`-F`）**：将所有内容（引导程序 + 冻结的代码 + 依赖）压缩并打包成一个独立的可执行文件。运行时，引导程序会先将内容解压到系统临时目录（如 Windows 的 `%TEMP%`），再启动程序。
+
+- **多文件模式（默认或 `-D`）**：生成一个 `dist` 目录，包含引导程序（可执行文件）、依赖库文件夹（如 `_internal`）、数据文件等。运行时直接从目录加载资源，无需解压，启动速度更快。
+
+---
+
+PyInstaller 并非 “编译” Python 代码为机器码，而是通过**打包依赖 + 嵌入精简解释器 + 引导程序启动**的方式，实现 “免 Python 环境运行”。其核心是解决两个问题：
+
+1. 如何完整收集所有依赖（避免 “运行时找不到模块” 错误）；
+
+2. 如何在无 Python 的系统上启动解释器并执行代码（通过引导程序和临时环境）。
+
+这也是为什么 PyInstaller 必须在**目标平台**上打包（如 Windows 生成 `.exe`，Linux 生成 ELF）—— 因为引导程序和系统依赖（如 Windows 的 DLL、Linux 的共享库）是平台特定的。
+
+## 3.2 搜索模块
 
 当然，在搜索模块的时候必然会遇到一些问题。
 
-pyinstaller只会搜索import语句，然后根据import得到的模块再进行搜索。如果编程者使用了一些特殊的导入方式，比如使用__import__()函数，使用importlib里面的导入函数，那么pyinstaller很可能找不到你所需要的模块。
+pyinstaller只会搜索 _import_ 语句，然后根据 _import_ 得到的模块再进行搜索。如果编程者使用了一些特殊的导入方式，比如使用__import__()函数，使用 _import lib_ 里面的导入函数，那么pyinstaller很可能找不到你所需要的模块。
 
 这时，你可以通过参数来指定你所需要的模块，也可以使用“钩子”等等（这是后话）。
 
-### 3.3 打包效果概述
+这个特性会体现在打包的时，会出现相关的报错。
+
+
+
+
+
+## 3.3 打包效果概述
 
 pyinstaller打包后会形成一个文件夹或单个的exe（可以用参数指定）。但不论是哪一种情况，都会包含一个exe文件，用户可以双击它运行该应用程序。
 
@@ -74,7 +278,7 @@ python文件有一种后缀名*.pyw，这样的程序执行时默认会隐藏控
 
 打包后的文件可能会被反编译（即通过exe文件得到原来的代码），可以通过一些方法进行加密（后文详解）。
 
-### 3.4 打包成单个文件夹
+## 3.4 打包成单个文件夹
 
 下面介绍一下打包完成后形成的文件夹。
 
@@ -82,45 +286,42 @@ python文件有一种后缀名*.pyw，这样的程序执行时默认会隐藏控
 
 当你运行里面的exe文件后，pyinstaller其实只是启动了解释器，然后通过解释器运行你的主程序。
 
-#### 优点
+- 【优点】
+	
+	- 打包成单个文件夹的形式便于调试，因为你可以清楚地看到pyinstaller将哪些模块文件放到了文件夹中
+	
+	- 单个文件夹的状态下，程序的启动速度和打包前差不多。
+	
+	- 当你更改代码，需要用户更新应用时，只需要让用户对于部分内容进行修改。如果你只修改了主程序，没有使用多余的模块，那么就只需要让用户替换里面的exe文件，而不用全部替换（因为更新前后使用的模块是一致的，它们都以多文件的形式放到了文件夹中）。
+	
 
-打包成单个文件夹的形式便于调试，因为你可以清楚地看到pyinstaller将哪些模块文件放到了文件夹中。
+- 【缺点】打包成单个的文件夹后，文件大小可能会更大一些，因为大部分依赖文件没有进行压缩。
 
-当你更改代码，需要用户更新应用时，只需要让用户对于部分内容进行修改。如果你只修改了主程序，没有使用多余的模块，那么就只需要让用户替换里面的exe文件，而不用全部替换（因为更新前后使用的模块是一致的，它们都以多文件的形式放到了文件夹中）。
-
-单个文件夹的状态下，程序的启动速度和打包前差不多。
-
-#### 缺点
-
-打包成单个的文件夹后，文件大小可能会更大一些，因为大部分依赖文件没有进行压缩。
-
-### 3.5 打包成单个exe
+## 3.5 打包成单个exe
 
 单个exe模式下，pyinstaller只会生成一个单独的exe文件，所有的依赖文件都会被压缩到exe文件中。
 
 和上面的文件夹模式类似，exe启动后，pyinstaller也是通过调用python解释器来运行主程序的。
 
-#### 优点
+- 【优点】启动单个exe非常简单，用户只需要点击exe文件就能运行，而无需在一大堆的依赖文件中找到exe文件。并且在经过压缩后，这个exe文件的文件大小会大大减小。
 
-启动单个exe非常简单，用户只需要点击exe文件就能运行，而无需在一大堆的依赖文件中找到exe文件。并且在经过压缩后，这个exe文件的文件大小会大大减小。
+- 【缺点】
+	
+	- 单个exe的启动速度比较慢（通常会慢几秒，且只是启动时的速度，不是运行后的速度），这是因为pyinstaller会在这一段时间中将一些依赖文件写入到一个临时的文件夹（后文介绍该文件夹的调用方式）。
+	
+	- 如果你希望添加一些附带文件（比如使用说明README），你还需要额外新建文件夹并将其放进去。
 
-#### 缺点
-
-单个exe的启动速度比较慢（通常会慢几秒，且只是启动时的速度，不是运行后的速度），这是因为pyinstaller会在这一段时间中将一些依赖文件写入到一个临时的文件夹（后文介绍该文件夹的调用方式）。
-
-如果你希望添加一些附带文件（比如使用说明README），你还需要额外新建文件夹并将其放进去。
-
-## 4 打包
+# 4 打包
 
 在了解相关原理后，下面正式进入打包环节。
 
 本章介绍通过命令行参数进行打包，这种方式比较初级，适用于一般的打包方式。
 
-### 4.1 基本语法
+## 4.1 基本语法
 
 打包需要通过cmd进行，语法和大多数工具一样。pyinstaller最简单的打包方式是：
 
-```undefined
+```bash
 pyinstaller myscript.py
 ```
 
@@ -132,7 +333,7 @@ pyinstaller myscript.py
 
 当然，你也可以自己构建一个*.spec文件（后文介绍），然后交给pyinstaller进行处理。
 
-### **4.2 参数总览**
+## **4.2 参数总览**
 
 本节只是列举并简要介绍常用的参数，并不过多展开，将在下面的部分对于一些重点参数举例介绍。
 
@@ -144,13 +345,13 @@ pyinstaller -D -i "icon.ico" myscript.py
 
 调用命令时，首先给出工具名称（比如上面的 pyinstaller ），然后提供相关参数，有一些参数是可选的但不需要附带任何值（比如上面的 -D ），有一些参数是必选的（比如上面的 myscript.py ），有一些参数需要附带一个值（比如上面的 -i "icon.ico" ）。其中有一些参数可以简写（比如 -i 就是 --icon 的简写）。
 
-#### 位置参数
+## 位置参数
 
 位置参数在打包时放在最后，而且无需指定关键字。
 
 pyinstaller的位置参数是需要打包的文件路径，或是spec文件路径。
 
-#### 可选参数
+## 可选参数
 
 下面只列举出比较有用的参数，读者可以自行了解，也可以跳过这部分，打包时用于参考。对于完整的参数信息，请参考[Using PyInstaller — PyInstaller 6.11.0 documentation](https://pyinstaller.org/en/stable/usage.html#options "Using PyInstaller — PyInstaller 6.11.0 documentation")
 
@@ -170,7 +371,7 @@ pyinstaller的位置参数是需要打包的文件路径，或是spec文件路�
 |--disable-windowed-traceback|禁用异常提示（只能在Windows和macOS上使用）|
 |--uac-admin|启动打包后的程序时申请以管理员模式运行（仅Windows）|
 
-### 4.3 单文件和文件夹模式打包/隐藏控制台窗口
+## 4.3 单文件和文件夹模式打包/隐藏控制台窗口
 
 下面是一个程序示例，将创建一个窗口并显示一张图片image.gif和一段提示。读者无需了解其代码细节。接下来将以这个程序为例进行一个简单的打包示范。
 
@@ -226,7 +427,7 @@ pyinstaller -w -F my_app_name.py
 
 打包后，生成了一个单个的my_app_name.exe，而没有其他文件。同样也需要将assets文件夹复制到与该exe文件的同一位置。 
 
-### 4.4 资源嵌入exe
+## 4.4 资源嵌入exe
 
 经常需要复制文件夹不仅麻烦，而且还无法防止里面的内容被用户修改。此时，我们可以使用pyinstaller的--add-data参数，将assets文件夹里面的资源嵌入到exe文件中。
 
@@ -295,7 +496,7 @@ pyinstaller -w -F --add-data assets;assets my_app_name.py
 
 比如--add-data "assets;assets"就表示将原本assets里面的所有文件，放入打包后的assets文件夹。再比如--add-data "assets/*.mp3;music"表示将原本assets里面的所有mp3文件，放入打包后的music文件夹。 
 
-### 4.5 更改图标
+## 4.5 更改图标
 
 打包完成后，默认的程序图标是一个“蛇”形，但我们也可以进行更改。（根据官方文档，该功能只能在Windows和macOS上使用）
 
@@ -323,7 +524,7 @@ pyinstaller -i icon.ico my_app_name.py
 
 ![](https://i-blog.csdnimg.cn/blog_migrate/cf7c304053fe2abff8a3ce5ff1f5098d.png)
 
-### 4.6 启动画面（闪屏）
+## 4.6 启动画面（闪屏）
 
 pyinstaller单文件模式启动速度较慢，所以可能需要一个启动画面（闪屏）进行过渡，提示用户正在进行加载。这个启动画面可以是单张图片，也可以是文本（默认情况下文本禁用，使用方式参见第5章）。
 
@@ -353,7 +554,7 @@ try:    import pyi_splash    pyi_splash.close()except ImportError:    pass
 
 至于pyi_splash还有一个update_text方法，用于在闪屏画面上显示加载文本，将在5.7节介绍。 
 
-### 4.7 禁用异常提示
+## 4.7 禁用异常提示
 
 --disable-windowed-traceback参数用于禁用异常提示。如果不添加这个参数，将会在非控制台程序出错（似乎仅限非致命的错误）时弹出一个窗口报告异常信息（注意：仅在隐藏控制台模式下弹出异常报告窗口）。为了测试，我在代码第一行添加了raise Exception，运行打包后的exe后效果如图所示。
 
@@ -363,7 +564,7 @@ try:    import pyi_splash    pyi_splash.close()except ImportError:    pass
 
 
 
-## 5 使用Spec文件
+# 5 使用Spec文件
 
 当你调用以上的打包方式时，会在脚本的文件夹下生成一个*.spec文件。
 
@@ -379,7 +580,7 @@ pyinstaller my_app_name.spec
 
 *.spec文件也比较好处理，直接使用python编辑器或记事本就能编辑。
 
-### 5.1 生成Spec文件
+## 5.1 生成Spec文件
 
 使用pyi-makespec工具可以根据pyinstaller的命令行参数生成Spec文件。用法很简单，在原先使用pyinstaller的打包命令中，把"pyinstaller"换成"pyi-makespec"就可以生成一个Spec文件。例如：
 
@@ -503,7 +704,7 @@ coll = COLLECT(
 
 接下来将针对Spec文件中的这些对象进行介绍
 
-### 5.2 Analysis对象
+## 5.2 Analysis对象
 
 Analysis类包含一些分析信息，它分析模块的导入以及一些依赖文件。
 
@@ -534,7 +735,7 @@ Analysis类包含一些分析信息，它分析模块的导入以及一些依赖
 |binaries|同参数中的binaries|
 |datas|同参数中的datas|
 
-### 5.3 PYZ对象
+## 5.3 PYZ对象
 
 完成分析后，将Analysis对象的一些属性传递给PYZ类。PYZ相当于一个压缩包，里面储存了所有的依赖文件。
 
@@ -542,7 +743,7 @@ Analysis类包含一些分析信息，它分析模块的导入以及一些依赖
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 ```
 
-### 5.4 EXE对象
+## 5.4 EXE对象
 
 定义PYZ对象后，接下来需要定义EXE对象，也就是可执行文件对象。
 
@@ -556,11 +757,11 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 |name|None|可执行文件的名称。在Windows上会自动添加".exe"后缀|"my_app_name"|
 |icon|None|可执行文件的图标路径|"icon.ico"|
 
-### 5.5 COLLECT对象（仅-D文件夹模式）
+## 5.5 COLLECT对象（仅-D文件夹模式）
 
 使用文件夹模式打包时还会有一个COLLECT对象，该对象用于创建文件夹。它有一个常用的关键字参数name，表示文件夹的名称。
 
-### 5.6 Bundle对象（仅macOS系统）
+## 5.6 Bundle对象（仅macOS系统）
 
 如果你要在macOS上创建应用程序，且你的应用程序是无控制台的，那么在exe构建完成之后还需要添加一些代码。
 
@@ -571,7 +772,7 @@ app = BUNDLE(exe,
              bundle_identifier=None)
 ```
 
-### 5.7 Splash对象
+## 5.7 Splash对象
 
 如果你想要在应用中添加启动画面（图片和文本都可以），需要在Spec文件中额外添加一个Splash对象进行控制。
 
@@ -685,7 +886,7 @@ pyinstaller my_app_name.spec
 
 可以看到，首先显示文本被设定为加载的各个依赖文件，然后变成update_text中自己设定的加载内容。
 
-### 5.8 多包捆绑（打包多个exe）
+## 5.8 多包捆绑（打包多个exe）
 
 > 有些产品由几个不同的应用程序组成，每个应用程序可能依赖于一组通用的第三方库，或者以其他方式共享一部分代码。在打包这样的产品时，如果单独对待每个应用程序，将其与所有依赖项捆绑在一起，那就太可惜了，因为这意味着要存储代码和库的副本。
 > 
@@ -693,7 +894,7 @@ pyinstaller my_app_name.spec
 
 比如有两个应用都使用了tkinter模块，且这两个应用相关，需要在发布时放到一起（比如一个应用专门用于图片剪裁，另外一个专门用于图片滤镜，它们可能共用了部分功能）。如果分别打包，那么每个应用都会包含一个tkinter模块的依赖文件，而且都储存相同的内容，这就很浪费存储空间。如果用多包捆绑的话，只会有一个tkinter模块的依赖文件，两个应用都可以调用相同的依赖。
 
-#### 文件夹模式的多包捆绑
+## 文件夹模式的多包捆绑
 
 如果采用文件夹模式，想要捆绑多个应用程序，那么只需要共享一个COLLECT对象。假如有hello1.py, hello2.py，将这两个应用进行捆绑，可以将它们的Spec文件进行一些组合。
 
@@ -729,7 +930,7 @@ coll = COLLECT(hello1_exe,
 
 这样，将会生成同一个文件夹，该文件夹下包含两个文件hello1.exe, hello2.exe。 它们共享一部分的依赖文件。
 
-#### 单文件模式的多包捆绑
+## 单文件模式的多包捆绑
 
 单文件模式下，多包捆绑会生成多个单独的exe，其中一个exe包含它们共有的依赖文件。
 
@@ -777,7 +978,7 @@ MERGE((a1, "hello1", "hello1"), (a2, "hello2", "hello2"))
 pyz1 = PYZ(...)
 exe1 = EXE(pyz1,
  
-    a1.dependencies, ####
+    a1.dependencies, ##
  
     a1.scripts, 
     a1.binaries,
@@ -788,7 +989,7 @@ pyz2 = PYZ(...)
 exe2 = EXE(
     pyz2,
  
-    a2.dependencies, ####
+    a2.dependencies, ##
  
     a2.scripts,
     a2.binaries,
@@ -802,7 +1003,7 @@ exe2 = EXE(
 
 最后生成两个文件，可以看到hello1.exe的文件大小比hello2.exe大了很多，这是由于hello1.exe中包含了它们共有的依赖库。如果不使用多包捆绑，而是分别单独进行打包，那么两个文件的大小将都会超过5000KB。
 
-## 6 钩子
+# 6 钩子
 
 有一些特殊的模块，它们存在一些特殊的依赖文件（比如ico, json等等）。而pyinstaller的导入分析无法检测到这些特殊的依赖文件，这就导致运行后出现问题。于是，pyinstaller引入了“钩子”。钩子文件其实就是一种python文件，后缀名为*.py即可（和Spec文件的实质是一样的）。钩子文件中指定了某个特殊模块所需要的所有依赖文件。通过传递钩子文件，pyinstaller就能找到那些“隐藏”的依赖文件。
 
@@ -812,7 +1013,7 @@ pyinstaller有一些内置的“钩子”，提供了一些常用模块的钩子
 
 钩子文件的常用命名格式是：hook-module.py（其中module是模块名）。（当然你也可以按自己喜好命名）
 
-### 6.1 钩子文件中的全局变量
+## 6.1 钩子文件中的全局变量
 
 钩子文件中可以包含以下全局变量（有一些变量可以不被写在文件中）：
 
@@ -830,7 +1031,7 @@ pyinstaller有一些内置的“钩子”，提供了一些常用模块的钩子
 hiddenimports = ["re", "os"]datas = [("assets", "assets)]
 ```
 
-### 6.2 PyInstaller.utils.hooks
+## 6.2 PyInstaller.utils.hooks
 
 pyinstaller提供了一些方法用于钩子文件的制作。这些方法位于PyInstaller.utils.hooks模块。首先需要在钩子文件导入该模块。（注意pyinstaller的P和I是大写的，这是pyinstaller作为模块时的名称）
 
@@ -884,7 +1085,7 @@ datas, binaries, hiddenimports = collect_all('my_module_name')
 
 使用hooks模块可以更加方便地制作钩子。
 
-### 6.3 为自己的模块提供钩子
+## 6.3 为自己的模块提供钩子
 
 如果自己创建的模块需要钩子，那么可以自己定义一个文件，并储存到自己的模块中。
 
@@ -901,17 +1102,17 @@ pyinstaller40 =
 
 最后可以在__pyinstaller文件夹中添加hook文件。
 
-## 7 反编译与加密
+# 7 反编译与加密
 
 pyinstaller制作的应用，可能会被反编译（即根据生成的exe得到这个程序的源代码）。同时，也有一些方法来预防反编译，或者增加反编译的难度。
 
 需要注意的是，反编译代码的结果大多数时候并不准确，只能得到大概的代码，可能需要后期处理。
 
-### 7.1 通过pyinstxtractor进行反编译
+## 7.1 通过pyinstxtractor进行反编译
 
 pyinstxtractor是专门针对pyinstaller的反编译工具（也就是说，其他的打包工具，比如py2exe,cx_Freeze打包的程序无法被这个工具反编译，需要通过别的反编译工具）。
 
-#### 下载工具
+## 下载工具
 
 首先通过以下链接下载pyinstxtractor： 
 
@@ -954,7 +1155,7 @@ root.mainloop() # 保持窗口运行
 
 为了方便演示，采用单文件模式进行打包：pyinstaller -F my_app_name.py。打包完成后，将assets文件夹放到exe所在文件夹中。
 
-#### 反编译exe
+## 反编译exe
 
 下面进入反编译环节。进入exe的文件夹，将下载的pyinstxtractor.py放到*.exe所在文件夹下。
 
@@ -976,7 +1177,7 @@ python pyinstxtractor.py my_app_name.exe
 
 ![](https://i-blog.csdnimg.cn/blog_migrate/7f33989b4d6e3b6504cf607dea0d09cb.png)​
 
-#### 添加magic number
+## 添加magic number
 
 接下来一步很关键，需要在my_app_name这个文件中添加magic number，也就是一些python版本相关的信息。这里需要使用十六进制编辑器（有很多，不一一介绍了，sublimetext就可以用来编辑） 
 
@@ -1007,7 +1208,7 @@ print(importlib.util.MAGIC_NUMBER.hex())
 
 如果不进行这一步，那么下一步反编译pyc时将会报错，提示magic number有误。
 
-#### 反编译pyc
+## 反编译pyc
 
 将pycdc.exe和my_app_name的pyc文件放到同一文件夹下。
 
@@ -1025,11 +1226,11 @@ pycdc my_app_name>final_my_app_name.py
 
 除了pycdc，常用于反编译pyc文件的还有uncompyle6，但是目前（截至2023.12.17）不支持python3.9以上的版本。还有一个在线反编译pyc工具（有限制）：[python反编译 - 在线工具](https://tool.lu/pyc "python反编译 - 在线工具")
 
-#### 反编译依赖库
+## 反编译依赖库
 
 以上的方法用于反编译主文件exe，如果想要反编译这个应用依赖的python模块，可以进入xxxx.exe_extracted文件夹下的PYZ-00.pyz_extracted，里面包含了这个应用所需的依赖模块的pyc文件。按照上一节的方法即可进行反编译。
 
-### 7.2 编译为pyd文件以防止反编译
+## 7.2 编译为pyd文件以防止反编译
 
 在打包前将一些依赖的*.py文件编译成*.pyd文件，可以大大增加反编译的难度。*.pyd是动态链接库，它可以像python模块一样调用但不能直接运行。使用*.pyd不仅可以增加反编译难度，还能提升代码速度。
 
@@ -1037,7 +1238,7 @@ pycdc my_app_name>final_my_app_name.py
 
 的方法进行了尝试但是效果并不好，以下仅给出方法。
 
-#### 调整代码
+## 调整代码
 
 在开始之前，我们需要先对代码进行调整。*.pyd文件只能被导入但不能直接运行，所以主程序不能进行pyd编译。所以，这样做以后依赖文件不会被反编译，但主程序还是会被反编译。我们可以进行一些改变，在主文件中留下那些不重要的代码，让反编译者看不到什么宝贵的信息，将重要的程序内容放到一个模块中，在主文件中只进行调用。
 
@@ -1080,7 +1281,7 @@ if __name__ == "__main__":
     main()
 ```
 
-#### 下载工具 
+## 下载工具 
 
 先用pip下载Cython：
 
@@ -1102,7 +1303,7 @@ pip install Cython
 
 然后等待安装完成。
 
-#### 编译成pyd
+## 编译成pyd
 
 在my_app_name.py的文件夹下新建setup.py，并输入以下代码：
 
@@ -1133,16 +1334,13 @@ python setup.py build_ext --inplace
 
 如果输入setup的命令后，出现了一些报错信息，提示需要Microsoft Visual C++，则代表上一步没有正确完成。
 
-#### 进行exe打包
+## 进行exe打包
 
 完成以上步骤后，可以通过pyinstaller进行打包了。
 
-## 8 注意事项与常见问题
+# 8 注意事项与常见问题
 
-
-
-
-### 注意事项：导入 
+## 注意事项：导入 
 
 作者似乎发现，在导入python模块时，如果使用from xxx import func的形式，那么pyinstaller只会把导入的func包含到打包的应用里面，而不是整个xxx模块。并且这个过程中，pyinstaller不会管xxx模块中还依赖于哪些模块，这就可能导致func函数根本无法运行。
 
@@ -1167,15 +1365,36 @@ if __name__ == "__main__":
 
 如果用pyinstaller对main.py进行编译，那么最后就会因为找不到tkinter模块而闪退。这是因为main.py中只导入了module.py中的main函数，pyinstaller会进行优化，只打包def main()函数的这一部分，而不会打包module.py中的其他内容（包括import tkinter这一重要的一句）
 
-直接用python运行main.py时就不会出现以上问题。因为python解释from xxx import func这一句时，还是会先把xxx模块运行一次，但是只保留了一个func的变量名。
+直接用python运行main.py时就不会出现以上问题。因为 python 解释from xxx import func这一句时，还是会先把xxx模块运行一次，但是只保留了一个func的变量名。
 
 这里提供三种解决方案：
 
-- 换一种导入方式，使用import xxx或from xxx import *（推荐）
+- 换一种导入方式，使用import xxx *（推荐）
 - 在主程序中把模块所需的依赖全导进来（在上面的示例中，就是main.py中添加import tkinter这一句）
 - 打包时指定--hidden-import等参数（不推荐）
 
-### 编译时报错：不是可运行的命令或程序
+
+## 编译时报错：Failed to collect submodules
+
+- 【问题描述】在执行 _pyinstaller_ 打包命令时，终端发生如下报错。
+
+```bash
+4424 WARNING: Failed to collect submodules for 'torch.testing._internal.optests' because importing 'torch.testing._internal.optests' raised: ModuleNotFoundError: No module named 'expecttest'  
+```
+
+- 【问题分析】_pyinstaller_ 打包时候，会手动检查所有依赖项是否存在，这与你在终端中运行 _python_ 脚本的检查逻辑不一样，手动在终端中运行其只会在该模块被调用时却不存在才会报错，如果不存在没被调用，它是不会报错的。
+
+- 【方案尝试】终端输入 _pip install expecttest_ 后回车
+
+- 【方案检验】报错消失
+
+
+## 编译时报错：
+
+联系前面有关于 _pyinstaller_ 对 _from xxx import xxx_ 的处理过程，可以断定，这是由于模块内部使用了该语句造成的，这导致打包的时候打包不完整。
+
+
+## 编译时报错：不是可运行的命令或程序
 
 首先检查pyinstaller是否被成功安装。在cmd输入pip list，看安装列表中是否存在pyinstaller，如果没有则重新安装，根据安装信息进行处理。
 
@@ -1202,7 +1421,7 @@ C:\Python\Python310\Scripts\pyinstaller.exe myscript.py
 
 右击“此电脑” -> 单击“属性” -> 单击“高级系统设置” -> 单击“环境变量” -> 在用户变量的位置单击“Path” -> 单击“编辑” -> 在“编辑环境变量”的窗口单击“新建” -> 写入pyinstaller.exe的所在路径 -> 一路“确定”进行保存。
 
-### 运行后报错：找不到某些模块或文件
+## 运行后报错：找不到某些模块或文件
 
 如果是第三方模块找不到，有可能是pyinstaller没有搜索到储存第三方模块的文件夹。这个文件夹一般是python安装目录下的Lib/site-packages。此时，打包时可以指定-p参数，将这个文件夹路径传递给pyinstaller进行打包，这样pyinstaller就会在site-packages中搜索相关的第三方模块。
 
@@ -1222,7 +1441,7 @@ pyinstaller --hidden-import "sys" --hidden-import "os" ...
 
 如果使用Spec打包，则应在Analysis类的hiddenimport参数的列表中添加找不到的模块。
 
-### 运行后报错：失去标准输入
+## 运行后报错：失去标准输入
 
 ```python
 RuntimeError: input(): lost sys.stdin
@@ -1230,7 +1449,7 @@ RuntimeError: input(): lost sys.stdin
 
 某些程序打包后出现以上报错内容。这是由于代码中使用了input这样的函数让用户进行输入，但是打包时却设置了隐藏控制台。于是，运行打包后的应用后就没有一个控制台让用户进行输入，就会报错。（失去stdout并不会报错，但是print内容不会显示）
 
-### 运行时闪退
+## 运行时闪退
 
 闪退是由于程序中出现了致命的异常，可能由多种原因导致，需要根据引发的异常进行处理。这里提供一种方法来看到造成闪退的报错信息。
 
@@ -1247,7 +1466,7 @@ my_app_name.exe
 - 程序只有print输出，输出结束就自动退出了，来不及看到输出内容。解决方法：在程序末尾加一行input()，这样最后输出完会停在那里
 - 还有可能是受到部分杀毒软件的影响（尤其是文件夹模式下的打包，很容易出现杀毒软件误报），比如火绒、360等，参见下一节
 
-### 运行后杀毒软件提示存在木马/无权限访问
+## 运行后杀毒软件提示存在木马/无权限访问
 
 出现运行后杀毒软件报木马可能是杀毒软件误报导致的，并不代表一定真的有木马。此外，exe直接运行时异常闪退，但是exe在命令行仍能正常运行，也有可能是受到杀毒软件的影响。
 
