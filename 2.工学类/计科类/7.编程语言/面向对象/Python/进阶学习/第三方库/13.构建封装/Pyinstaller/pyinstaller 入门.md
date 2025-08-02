@@ -205,6 +205,24 @@ PyInstaller 等打包工具的本质是做一件事：**分析代码中所有直
 很多用 pyinstaller 的新手估计都犯过这个错误，因为在 build 目录中也看到了一个 exe 可执行文件。
 
 
+- ## 3.4. 遇到 IndexError: tuple index out of range 报错
+
+- 问题描述：执行 pyinstaller 命令后报错，报错的最后一行类似如下
+
+```
+  File "E:\计算机开发\lib\dis.py", line 292, in _get_const_info       
+    argval = const_list[const_index]
+IndexError: tuple index out of range
+```
+
+- 问题分析：在某些 Python 版本或特殊字节码中（例如第三方库编译的非标准字节码），`_unpack_opargs` 函数的逻辑可能存在漏洞：**在「不需要扩展参数的指令」分支中，`extended_arg` 没有被重置为 0**，详情参考[对话](https://www.doubao.com/thread/w5bc3236dae135be0)
+
+- 方案尝试：定位到`dis.py`文件（路径因个人环境而异，如`C:\Users\hp\AppData\Local\Programs\Python\Python310\Lib\dis.py` 、`..\envs\steamlit\lib\dis.py`），找到`_unpack_opargs(code)`函数，在`else`分支中添加`extended_arg = 0`语句。
+
+![](https://i0.hdslb.com/bfs/openplatform/223b76f4ea9405d505354b7f1347f53e5857d6d8.png)
+
+- 方案验证：成功打包目标应用
+
 - # 4. 本库思考
 
 
